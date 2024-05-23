@@ -30,7 +30,7 @@ def create_tables(season_gameIDs):
         
         columns_to_drop = ['actionNumber', 'playerNameI', 'xLegacy', 'yLegacy', 'videoAvailable']
         count = 0
-        for gameID in season_gameIDs[:20]:
+        for gameID in season_gameIDs:
             game_data = playbyplayv3.PlayByPlayV3(gameID).play_by_play.get_data_frame()
             filtered_data = game_data.drop(columns=columns_to_drop)
 
