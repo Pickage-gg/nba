@@ -1,8 +1,6 @@
 import psycopg2
-from sqlalchemy import create_engine
-import pandas as pd
 from config import load_config
-import get_gamelog
+from sqlalchemy import create_engine
 from nba_api.stats.endpoints import leaguegamefinder
 from nba_api.stats.endpoints import playbyplayv3
 
@@ -31,15 +29,24 @@ def create_tables(season_gameIDs):
         engine = create_engine(f"postgresql://{config['user']}:{config['password']}@{config['host']}:{config['port']}/{config['database']}")
         
         columns_to_drop = ['actionNumber', 'playerNameI', 'xLegacy', 'yLegacy', 'videoAvailable']
-        for gameID in season_gameIDs[:2]:
+        count = 0
+        for gameID in season_gameIDs[:20]:
             game_data = playbyplayv3.PlayByPlayV3(gameID).play_by_play.get_data_frame()
             filtered_data = game_data.drop(columns=columns_to_drop)
-            filtered_data.to_sql('PbP_table', engine, if_exists='append', index=False)
+
+            if not filtered_data.empty:
+                filtered_data.to_sql('PbP_table', engine, if_exists='append', index=False)
+                count += 1
+                print(f"{count}: {gameID} data inserted")
+            else:
+                print(f"{count}: {gameID} data empty")
 
     except (psycopg2.DatabaseError, Exception) as e:
         print(e)
 
 if __name__ == '__main__':
+    drop_table("PbP_table")
     season = "2023-24" 
     season_gameIDs = get_gameID(season)
+    #print(season_gameIDs[:5])
     create_tables(season_gameIDs)

@@ -2,7 +2,6 @@
 Using the nba_api module, get player gamelogs
 """
 
-import datetime
 import pandas as pd
 from nba_api.stats.endpoints import playergamelog
 from nba_api.stats.static import players
@@ -31,13 +30,11 @@ def player_gamelog(playerID):
     """
     given a playerID gather the gamelogs of that player from the last two years and return a pandas df
     """
-    current_year = datetime.datetime.now().year
-    seasons_range = range(2022, current_year + 1)
+    season = 2023
     player_dict = players.get_active_players()
     id_player_pairs = dict([(player['id'], player['full_name']) for player in player_dict])
 
-    player_gamelog = [playergamelog.PlayerGameLog(playerID, season=season).get_data_frames()[0] for season in seasons_range]
-    player_df = pd.concat([df for df in player_gamelog if not df.empty])
+    player_df = playergamelog.PlayerGameLog(playerID, season=season).get_data_frames()[0]
 
     player_df.insert(1, 'Season', player_df['SEASON_ID'].apply(format_season))
     player_df.insert(3, 'Player_Name', player_df['Player_ID'].map(id_player_pairs))
