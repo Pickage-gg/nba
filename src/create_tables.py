@@ -1,4 +1,3 @@
-import pandas as pd
 from nba_api.stats.endpoints import playergamelog, leaguegamefinder, playbyplayv3
 from nba_api.stats.static import players, teams
 import psycopg2
@@ -6,6 +5,9 @@ from sqlalchemy import create_engine
 from config import load_config
 
 class get_Gamelogs:
+    '''
+    This class retrieves and processes game log data for players and teams using the nba_api module.
+    '''
     def __init__(self):
         self.player_dict = players.get_active_players()
         self.id_player_pairs = dict([(player['id'], player['full_name']) for player in self.player_dict])
@@ -37,6 +39,9 @@ class get_Gamelogs:
 
 
 class PlaybyPlayTables:
+    '''
+    This class handles the creation of the Play-by-Play tables in a PostgreSQL database.
+    '''
     def __init__(self):
         self.db_params = load_config()
         self.engine = create_engine(f"postgresql://{self.db_params['user']}:{self.db_params['password']}@{self.db_params['host']}:{self.db_params['port']}/{self.db_params['database']}")
@@ -72,6 +77,9 @@ class PlaybyPlayTables:
 
 
 class GamelogTables:
+    '''
+    This class handles the creation of both the team and player gamelog tables in a PostgreSQL database.
+    '''
     def __init__(self):
         self.gamelog = get_Gamelogs()
         self.db_params = load_config()
