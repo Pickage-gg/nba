@@ -1,8 +1,9 @@
 from nba_api.stats.endpoints import playergamelog, leaguegamefinder, playbyplayv3
 from nba_api.stats.static import players, teams
 import psycopg2
+import os
+from dotenv import load_dotenv, dotenv_values
 from sqlalchemy import create_engine
-from config import load_config
 
 class get_Gamelogs:
     '''
@@ -43,11 +44,12 @@ class PlaybyPlayTables:
     This class handles the creation of the Play-by-Play tables in a PostgreSQL database.
     '''
     def __init__(self):
-        self.db_params = load_config()
-        self.engine = create_engine(f"postgresql://{self.db_params['user']}:{self.db_params['password']}@{self.db_params['host']}:{self.db_params['port']}/{self.db_params['database']}")
+        load_dotenv()
+        self.db_url = os.getenv("POSTGRES_URL") 
+        self.engine = create_engine(self.db_url)
 
     def drop_table(self, table_name):
-        conn = psycopg2.connect(**self.db_params)
+        conn = psycopg2.connect(self.db_url)
         cursor = conn.cursor()
         sql = f'DROP TABLE IF EXISTS "{table_name}"'
         cursor.execute(sql)
@@ -82,11 +84,12 @@ class GamelogTables:
     '''
     def __init__(self):
         self.gamelog = get_Gamelogs()
-        self.db_params = load_config()
-        self.engine = create_engine(f"postgresql://{self.db_params['user']}:{self.db_params['password']}@{self.db_params['host']}:{self.db_params['port']}/{self.db_params['database']}")
+        load_dotenv()
+        self.db_url = os.getenv("POSTGRES_URL") 
+        self.engine = create_engine(self.db_url)
 
     def drop_table(self, table_name):
-        conn = psycopg2.connect(**self.db_params)
+        conn = psycopg2.connect(self.db_url)
         cursor = conn.cursor()
         sql = f'DROP TABLE IF EXISTS "{table_name}"'
         cursor.execute(sql)
