@@ -7,9 +7,9 @@ from tabulate import tabulate
 class Database:
 
     def __init__(self):
-        self.connection = self.open_connection()
+        self.connection = self.__open_connection()
         
-    def open_connection(self):
+    def __open_connection(self):
         load_dotenv()
         return psycopg2.connect(user=os.getenv("POSTGRES_USER"),
                         password=os.getenv("POSTGRES_PASSWORD"),
@@ -18,7 +18,7 @@ class Database:
                         database=os.getenv("POSTGRES_DB")
                         )
          
-    def close_connection(self):
+    def _close_connection(self):
          self.connection.close()
 
     def query(self, received):
