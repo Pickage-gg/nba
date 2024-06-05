@@ -18,7 +18,7 @@ class Database:
                         database=os.getenv("POSTGRES_DB")
                         )
          
-    def _close_connection(self):
+    def __close_connection(self):
          self.connection.close()
 
     def query(self, received):
